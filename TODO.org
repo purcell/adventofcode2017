@@ -4,3 +4,9 @@
   - State "DONE"       from "TODO"       [2017-12-01 Fri 19:54]
   CLOCK: [2017-12-01 Fri 19:30]--[2017-12-01 Fri 19:54] =>  0:24
   :END:
+* DONE Day 1b
+  CLOSED: [2017-12-01 Fri 20:06]
+  :LOGBOOK:
+  - State "DONE"       from "TODO"       [2017-12-01 Fri 20:06]
+  CLOCK: [2017-12-01 Fri 19:55]--[2017-12-01 Fri 20:06] =>  0:11
+  :END:
