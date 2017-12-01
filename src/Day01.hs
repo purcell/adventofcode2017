@@ -16,14 +16,15 @@ checksum offset ds = sum [d1 | (d1, d2) <- pairs ds, d1 == d2]
 checksumHalfWay :: [Int] -> Int
 checksumHalfWay ds = checksum (length ds `div` 2) ds
 
-runInput :: ([Int] -> Int) -> IO ()
-runInput f = do
-  result <- parseFromFile (many1 (digitToInt <$> digit)) "input/1.txt"
-  either (error . show) (print . f) result
+withInput :: FilePath -> Parser a -> IO a
+withInput path p = do
+  result <- parseFromFile (p <* eof) path
+  either (error . show) return result
 
 day01 :: IO ()
-day01 = do
-  putStrLn "Part 1"
-  runInput (checksum 1)
-  putStrLn "Part 2"
-  runInput checksumHalfWay
+day01 =
+  withInput "input/1.txt" (many1 (digitToInt <$> digit) <* newline) >>= \digits -> do
+    putStrLn "Part 1"
+    print (checksum 1 digits)
+    putStrLn "Part 2"
+    print (checksumHalfWay digits)
