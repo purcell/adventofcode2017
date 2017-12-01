@@ -1,0 +1,6 @@
+* DONE Day 1a
+  CLOSED: [2017-12-01 Fri 19:54]
+  :LOGBOOK:
+  - State "DONE"       from "TODO"       [2017-12-01 Fri 19:54]
+  CLOCK: [2017-12-01 Fri 19:30]--[2017-12-01 Fri 19:54] =>  0:24
+  :END:
