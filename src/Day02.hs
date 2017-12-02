@@ -3,6 +3,7 @@ module Day02
   ) where
 
 import Data.Maybe
+import Data.Tuple (swap)
 import Text.Parsec
 import Text.Parsec.String
 
@@ -10,13 +11,12 @@ difference :: [Int] -> Int
 difference vals = maximum vals - minimum vals
 
 evenDivision :: [Int] -> Int
-evenDivision = head . mapMaybe division . pairs
+evenDivision = head . mapMaybe division . allPairs
   where
     division (x, y)
       | x `mod` y == 0 = Just (x `div` y)
-    division (x, y)
-      | y `mod` x == 0 = Just (y `div` x)
     division _ = Nothing
+    allPairs xs = pairs xs ++ (swap <$> pairs xs)
 
 pairs :: Eq a => [a] -> [(a, a)]
 pairs [] = []
