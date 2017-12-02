@@ -2,7 +2,7 @@ module Day02
   ( day02
   ) where
 
-import Data.Maybe
+import Data.List (tails)
 import Data.Tuple (swap)
 import Text.Parsec
 import Text.Parsec.String
@@ -11,16 +11,12 @@ difference :: [Int] -> Int
 difference vals = maximum vals - minimum vals
 
 evenDivision :: [Int] -> Int
-evenDivision = head . mapMaybe division . allPairs
+evenDivision xs = head [q | (x, y) <- allPairs, (q, 0) <- [x `divMod` y]]
   where
-    division (x, y)
-      | x `mod` y == 0 = Just (x `div` y)
-    division _ = Nothing
-    allPairs xs = pairs xs ++ (swap <$> pairs xs)
+    allPairs = pairs xs ++ (swap <$> pairs xs)
 
 pairs :: Eq a => [a] -> [(a, a)]
-pairs [] = []
-pairs (x:xs) = [(x, x') | x' <- xs] ++ pairs xs
+pairs xs = [(x, x') | (x:rest) <- tails xs, x' <- rest]
 
 checksumOn :: ([Int] -> Int) -> [[Int]] -> Int
 checksumOn f = sum . fmap f
