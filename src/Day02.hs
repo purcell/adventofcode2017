@@ -2,21 +2,15 @@ module Day02
   ( day02
   ) where
 
-import Data.List (tails)
-import Data.Tuple (swap)
+import Data.List (delete)
 import Text.Parsec
-import Text.Parsec.String
+import Text.Parsec.String (Parser, parseFromFile)
 
 difference :: [Int] -> Int
 difference vals = maximum vals - minimum vals
 
 evenDivision :: [Int] -> Int
-evenDivision xs = head [q | (x, y) <- allPairs, (q, 0) <- [x `divMod` y]]
-  where
-    allPairs = pairs xs ++ (swap <$> pairs xs)
-
-pairs :: Eq a => [a] -> [(a, a)]
-pairs xs = [(x, x') | (x:rest) <- tails xs, x' <- rest]
+evenDivision xs = head [q | x <- xs, y <- delete x xs, (q, 0) <- [x `divMod` y]]
 
 checksumOn :: ([Int] -> Int) -> [[Int]] -> Int
 checksumOn f = sum . fmap f
