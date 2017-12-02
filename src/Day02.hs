@@ -2,14 +2,28 @@ module Day02
   ( day02
   ) where
 
+import Data.Maybe
 import Text.Parsec
 import Text.Parsec.String
 
 difference :: [Int] -> Int
-difference vals = (maximum vals) - (minimum vals)
+difference vals = maximum vals - minimum vals
 
-checksum :: [[Int]] -> Int
-checksum = sum . fmap difference
+evenDivision :: [Int] -> Int
+evenDivision = head . mapMaybe division . pairs
+  where
+    division (x, y)
+      | x `mod` y == 0 = Just (x `div` y)
+    division (x, y)
+      | y `mod` x == 0 = Just (y `div` x)
+    division _ = Nothing
+
+pairs :: Eq a => [a] -> [(a, a)]
+pairs [] = []
+pairs (x:xs) = [(x, x') | x' <- xs] ++ pairs xs
+
+checksumOn :: ([Int] -> Int) -> [[Int]] -> Int
+checksumOn f = sum . fmap f
 
 withInput :: FilePath -> Parser a -> IO a
 withInput path p = do
@@ -26,4 +40,6 @@ day02 :: IO ()
 day02 =
   withInput "input/2.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
-    print $ checksum parsed
+    print $ checksumOn difference parsed
+    putStrLn "Part 2"
+    print $ checksumOn evenDivision parsed
