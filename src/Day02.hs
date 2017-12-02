@@ -27,11 +27,11 @@ checksumOn f = sum . fmap f
 
 withInput :: FilePath -> Parser a -> IO a
 withInput path p = do
-  result <- parseFromFile p path
+  result <- parseFromFile (p <* eof) path
   either (error . show) return result
 
 parser :: Parser [[Int]]
-parser = many1 (sepBy1 number (string "\t") <* newline)
+parser = many1 (sepBy1 number (char '\t') <* newline)
   where
     number :: Parser Int
     number = read <$> many1 digit
