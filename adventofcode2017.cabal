@@ -20,6 +20,7 @@ description:         Please see the README on Github at <https://github.com/purc
 library
   hs-source-dirs:      src
   exposed-modules:     Day01
+                     , Day02
   ghc-options:         -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
