@@ -53,10 +53,11 @@ sumValues = fst <$> scanl totalAt (1, M.singleton startPos 1) rest
 
 neighbourPositions :: Pos -> [Pos]
 neighbourPositions (x, y) =
-  [ (x', y')
-  | x' <- [x - 1, x, x + 1]
-  , y' <- [y - 1, y, y + 1]
-  , (x, y) /= (x', y')
+  [ pos
+  | dx <- [-1 .. 1]
+  , dy <- [-1 .. 1]
+  , let pos = (x + dx, y + dy)
+  , pos /= (x, y)
   ]
 
 day03 :: IO ()
