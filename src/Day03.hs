@@ -43,10 +43,11 @@ positions = (\(p, _, _) -> p) <$> iterate next ((0, 0), S, S.singleton (0, 0))
         left = turnLeft dir
 
 sumValues :: [Int]
-sumValues = fst <$> scanl totalAt (1, M.singleton startPos 1) rest
+sumValues = go M.empty positions
   where
-    (startPos:rest) = positions
-    totalAt (_, sums) pos = (thisVal, M.insert pos thisVal sums)
+    go _ [] = []
+    go sums ((0, 0):rest) = 1 : go (M.insert (0, 0) 1 sums) rest
+    go sums (pos:rest) = thisVal : go (M.insert pos thisVal sums) rest
       where
         thisVal =
           sum . catMaybes . fmap (`M.lookup` sums) . neighbourPositions $ pos
