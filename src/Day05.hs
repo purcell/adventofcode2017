@@ -6,15 +6,15 @@ import qualified Data.Sequence as Seq
 import Text.Parsec
 import Text.Parsec.String (Parser, parseFromFile)
 
-jumpsToExit :: [Int] -> Int
-jumpsToExit offsets =
+jumpsToExit :: (Int -> Int) -> [Int] -> Int
+jumpsToExit modifier offsets =
   length $ takeWhile inside $ iterate jump (Seq.fromList offsets, 0)
   where
     inside (instrs, n) = n >= 0 && n < Seq.length instrs
     jump (instrs, n) = (instrs', n')
       where
         n' = n + atN
-        instrs' = Seq.update n (atN + 1) instrs
+        instrs' = Seq.update n (modifier atN) instrs
         atN = Seq.index instrs n
 
 withInput :: FilePath -> Parser a -> IO a
@@ -38,4 +38,12 @@ day05 :: IO ()
 day05 =
   withInput "input/5.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
-    print $ jumpsToExit parsed
+    print $ jumpsToExit (+ 1) parsed
+    putStrLn "Part 2"
+    print $
+      jumpsToExit
+        (\off ->
+           if off >= 3
+             then off - 1
+             else off + 1)
+        parsed
