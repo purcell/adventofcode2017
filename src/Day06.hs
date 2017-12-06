@@ -4,18 +4,18 @@ module Day06
 
 import qualified Data.Set as S
 import qualified Data.Vector as V
-import Data.Vector (Vector, (!), (//))
+import Data.Vector (Vector, (!))
 import Text.Parsec
 import Text.Parsec.String (Parser, parseFromFile)
 
 redistribute :: Vector Int -> Vector Int
-redistribute banks = V.accum (+) banks' additions
+redistribute banks = V.accum (+) banks changes
   where
-    additions =
+    changes =
+      (maxPos, -maxVal) :
       [(i `mod` V.length banks, 1) | i <- take maxVal [(maxPos + 1) ..]]
     maxPos = V.maxIndex banks
     maxVal = banks ! maxPos
-    banks' = banks // [(maxPos, 0)]
 
 part1 :: Vector Int -> Int
 part1 = fst . countUntilRepeated . redistributions
