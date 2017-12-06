@@ -24,10 +24,12 @@ library
                      , Day03
                      , Day04
                      , Day05
+                     , Day06
   ghc-options:         -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , containers
+                     , vector
                      , parsec
 
 executable adventofcode2017
