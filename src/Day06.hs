@@ -2,7 +2,7 @@ module Day06
   ( day06
   ) where
 
-import qualified Data.Set as S
+import qualified Data.Map as M
 import qualified Data.Vector as V
 import Data.Vector (Vector, (!))
 import Text.Parsec
@@ -18,22 +18,19 @@ redistribute banks = V.accum (+) banks changes
     maxVal = banks ! maxPos
 
 part1 :: Vector Int -> Int
-part1 = fst . countUntilRepeated . redistributions
+part1 = fst . detectLoop
 
 part2 :: Vector Int -> Int
-part2 blockCounts = fst . countUntilRepeated $ fromFirstRepeat
-  where
-    fromFirstRepeat = snd . countUntilRepeated . redistributions $ blockCounts
+part2 = snd . detectLoop
 
-redistributions :: Vector Int -> [Vector Int]
-redistributions = iterate redistribute
-
-countUntilRepeated :: [Vector Int] -> (Int, [Vector Int])
-countUntilRepeated = go S.empty 0
+detectLoop :: Vector Int -> (Int, Int)
+detectLoop = go M.empty 0 . iterate redistribute
   where
-    go seen n (x:xs)
-      | x `S.notMember` seen = go (S.insert x seen) (n + 1) xs
-    go _ n xs = (n, xs)
+    go seen n (x:xs) =
+      case x `M.lookup` seen of
+        Just prev -> (n, n - prev)
+        Nothing -> go (M.insert x n seen) (n + 1) xs
+    go _ _ _ = error "impossible"
 
 withInput :: FilePath -> Parser a -> IO a
 withInput path p = do
