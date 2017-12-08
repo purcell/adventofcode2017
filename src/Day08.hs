@@ -43,8 +43,8 @@ data Instr =
         Cond
   deriving (Show)
 
-runAll :: [Instr] -> Map Reg Int
-runAll = foldl eval M.empty
+runAll :: [Instr] -> [Map Reg Int]
+runAll = scanl eval M.empty
 
 eval :: Map Reg Int -> Instr -> Map Reg Int
 eval regs (Instr reg regop val cond)
@@ -99,8 +99,13 @@ parser = many1 (instr <* newline)
            else 1) *
         read digits
 
+biggestValue :: Map Reg Int -> Int
+biggestValue = maximum . (0 :) . M.elems
+
 day08 :: IO ()
 day08 =
   withInput "input/8.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
-    print $ maximum $ M.elems $ runAll parsed
+    print $ biggestValue $ last $ runAll parsed
+    putStrLn "Part 2"
+    print $ maximum (biggestValue <$> runAll parsed)
