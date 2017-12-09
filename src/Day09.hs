@@ -12,24 +12,31 @@ withInput path p = do
   either (error . show) return result
 
 data Content
-  = Garbage
+  = Garbage Int
   | Group [Content]
   deriving (Show)
 
 totalScore :: [Content] -> Int
 totalScore = sum . fmap (score 1)
   where
-    score _ Garbage = 0
+    score _ (Garbage _) = 0
     score level (Group contained) =
       level + sum (score (level + 1) <$> contained)
+
+garbageLength :: [Content] -> Int
+garbageLength = sum . fmap glen
+  where
+    glen (Garbage l) = l
+    glen (Group contained) = garbageLength contained
 
 parser :: Parser [Content]
 parser = many content
   where
     content = garbage <|> group
-    garbage =
-      char '<' *> many ((char '!' *> anyChar) <|> satisfy (`notElem` "!>")) <*
-      char '>' $> Garbage
+    garbage, group :: Parser Content
+    garbage = Garbage <$> (char '<' *> (sum <$> garbageContents) <* char '>')
+    garbageContents =
+      many ((char '!' *> anyChar $> 0) <|> (satisfy (`notElem` "!>") $> 1))
     group = Group <$> (char '{' *> sepBy content (char ',') <* char '}')
 
 day09 :: IO ()
@@ -37,3 +44,5 @@ day09 =
   withInput "input/9.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
     print $ totalScore parsed
+    putStrLn "Part 2"
+    print $ garbageLength parsed
