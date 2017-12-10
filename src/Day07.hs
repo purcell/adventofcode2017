@@ -27,9 +27,9 @@ towers ps = T.unfoldTree build root
 
 highestUnbalanced :: Tree (String, Int) -> Int -> Maybe (String, Int, Int)
 highestUnbalanced tree delta =
-  case oddSubtree tree of
-    Just (unbalanced, discrepancy) -> highestUnbalanced unbalanced discrepancy
-    Nothing ->
+  maybe checkYoSelf (uncurry highestUnbalanced) (oddSubtree tree)
+  where
+    checkYoSelf =
       if delta == 0
         then Nothing
         else let (Node (s, w) _) = tree
