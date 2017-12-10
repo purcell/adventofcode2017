@@ -2,11 +2,12 @@ module Day07
   ( day07
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Arrow ((&&&))
 import Data.Maybe (listToMaybe)
 import Data.Tree (Tree(..))
 import qualified Data.Tree as T
-import Text.Parsec
+import Text.Parsec hiding ((<|>))
 import Text.Parsec.String (Parser, parseFromFile)
 
 data Program = Program
@@ -26,14 +27,11 @@ towers ps = T.unfoldTree build root
     hasNoParent p = null [p' | p' <- ps, tName p `elem` tNamesAbove p']
 
 highestUnbalanced :: Tree (String, Int) -> Int -> Maybe (String, Int, Int)
-highestUnbalanced tree delta =
-  maybe checkYoSelf (uncurry highestUnbalanced) (oddSubtree tree)
-  where
-    checkYoSelf =
-      if delta == 0
-        then Nothing
-        else let (Node (s, w) _) = tree
-             in Just (s, w, w + delta)
+highestUnbalanced tree@(Node (s, w) _) delta =
+  (oddSubtree tree >>= uncurry highestUnbalanced) <|>
+  if delta /= 0
+    then Just (s, w, w + delta)
+    else Nothing
 
 oddSubtree :: Tree (String, Int) -> Maybe (Tree (String, Int), Int)
 oddSubtree (Node _ above) =
