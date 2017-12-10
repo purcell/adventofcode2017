@@ -35,6 +35,7 @@ library
                      , containers
                      , vector
                      , parsec
+                     , split
 
 executable adventofcode2017
   hs-source-dirs:      app
