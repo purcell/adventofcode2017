@@ -2,7 +2,7 @@ module Day07
   ( day07
   ) where
 
-import Control.Applicative ((<|>))
+import Control.Applicative ((<|>), empty)
 import Control.Arrow ((&&&))
 import Data.Maybe (listToMaybe)
 import Data.Tree (Tree(..))
@@ -30,8 +30,8 @@ highestUnbalanced :: Tree (String, Int) -> Int -> Maybe (String, Int, Int)
 highestUnbalanced tree@(Node (s, w) _) delta =
   (oddSubtree tree >>= uncurry highestUnbalanced) <|>
   if delta /= 0
-    then Just (s, w, w + delta)
-    else Nothing
+    then pure (s, w, w + delta)
+    else empty
 
 oddSubtree :: Tree (String, Int) -> Maybe (Tree (String, Int), Int)
 oddSubtree (Node _ above) =
