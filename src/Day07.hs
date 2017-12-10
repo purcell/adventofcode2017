@@ -2,23 +2,53 @@ module Day07
   ( day07
   ) where
 
-import qualified Data.Map as M
+import Control.Arrow ((&&&))
 import Data.Maybe (listToMaybe)
-import qualified Data.Set as S
+import Data.Tree (Tree(..))
+import qualified Data.Tree as T
 import Text.Parsec
 import Text.Parsec.String (Parser, parseFromFile)
 
 data Program = Program
   { tName :: String
   , tWeight :: Int
-  , tNamesAbove :: S.Set String
+  , tNamesAbove :: [String]
   } deriving (Show)
 
-bottom :: [Program] -> Maybe Program
-bottom programs = listToMaybe [p | p <- programs, hasNoParent p]
+towers :: [Program] -> Tree (String, Int)
+towers ps = T.unfoldTree build root
   where
-    hasNoParent p =
-      null [p' | p' <- programs, tName p `S.member` tNamesAbove p']
+    build name =
+      let (Program n w above) = findByName name
+      in ((n, w), above)
+    findByName n = head (filter ((n ==) . tName) ps)
+    root = tName (head (filter hasNoParent ps))
+    hasNoParent p = null [p' | p' <- ps, tName p `elem` tNamesAbove p']
+
+highestUnbalanced :: Tree (String, Int) -> Int -> Maybe (String, Int, Int)
+highestUnbalanced tree delta =
+  case oddSubtree tree of
+    Just (unbalanced, discrepancy) -> highestUnbalanced unbalanced discrepancy
+    Nothing ->
+      if delta == 0
+        then Nothing
+        else let (Node (s, w) _) = tree
+             in Just (s, w, w + delta)
+
+oddSubtree :: Tree (String, Int) -> Maybe (Tree (String, Int), Int)
+oddSubtree (Node _ above) =
+  listToMaybe
+    [ (n, bestWeight - w)
+    | (n, w) <- withWeights
+    , bestWeight <- [w' | w' <- weights, length (filter (/= w') weights) <= 1]
+    , w /= bestWeight
+    ]
+  where
+    withWeights = map (id &&& totalWeight) above
+    weights = map snd withWeights
+
+totalWeight :: Tree (String, Int) -> Int
+totalWeight t = sum (snd <$> T.flatten t)
 
 withInput :: FilePath -> Parser a -> IO a
 withInput path p = do
@@ -30,7 +60,7 @@ parser = many1 (tower <* newline)
   where
     tower =
       Program <$> (name <* char ' ') <*> (char '(' *> number <* char ')') <*>
-      (S.fromList <$> option [] nameList)
+      option [] nameList
     nameList = string " -> " *> sepBy1 name (string ", ")
     name = many1 lower
     number = read <$> many1 digit
@@ -39,4 +69,6 @@ day07 :: IO ()
 day07 =
   withInput "input/7.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
-    print $ bottom parsed
+    print $ head (T.flatten (towers parsed))
+    putStrLn "Part 2"
+    print $ highestUnbalanced (towers parsed) 0
