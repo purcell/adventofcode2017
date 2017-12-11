@@ -22,8 +22,6 @@ data Move
   | S
   | SW
   | NW
-  | E
-  | W
 
 move :: Move -> GridPos -> GridPos
 move m (GridPos x y z) =
@@ -52,9 +50,7 @@ parser = sepBy1 parseMove (char ',')
       try (string "sw" $> SW) <|>
       try (string "se" $> SE) <|>
       try (string "n" $> N) <|>
-      try (string "s" $> S) <|>
-      try (string "e" $> E) <|>
-      try (string "w" $> W)
+      try (string "s" $> S)
 
 day11 :: IO ()
 day11 =
