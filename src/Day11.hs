@@ -51,8 +51,8 @@ parser = sepBy1 parseMove (char ',')
       try (string "ne" $> NE) <|> try (string "nw" $> NW) <|>
       try (string "sw" $> SW) <|>
       try (string "se" $> SE) <|>
-      try (string "n" $> N) <|>
-      try (string "s" $> S)
+      (string "n" $> N) <|>
+      (string "s" $> S)
 
 day11 :: IO ()
 day11 =
