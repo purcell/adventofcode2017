@@ -6,6 +6,8 @@ import Data.Functor (($>))
 import Text.Parsec
 import Text.Parsec.String (Parser, parseFromFile)
 
+-- | Position on a grid in cube coordinates.
+-- Ref. https://www.redblobgames.com/grids/hexagons/#distances
 data GridPos = GridPos
   { gx :: Int
   , gy :: Int
