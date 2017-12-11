@@ -59,4 +59,5 @@ day11 =
   withInput "input/11.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
     print $ distanceBetween origin (foldr move origin parsed)
+    putStrLn "Part 2"
     print $ maximum $ distanceBetween origin <$> scanl (flip move) origin parsed
