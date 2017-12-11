@@ -57,7 +57,8 @@ parser = sepBy1 parseMove (char ',')
       try (string "w" $> W)
 
 day11 :: IO ()
-day11 = do
+day11 =
   withInput "input/11.txt" parser >>= \parsed -> do
     putStrLn "Part 1"
     print $ distanceBetween origin (foldr move origin parsed)
+    print $ maximum $ distanceBetween origin <$> scanl (flip move) origin parsed
