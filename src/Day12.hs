@@ -1,5 +1,3 @@
-{-# LANGUAGE TupleSections #-}
-
 module Day12
   ( day12
   ) where
@@ -11,6 +9,7 @@ import qualified Data.Graph.Inductive.Graph as G
 import Data.Graph.Inductive.PatriciaTree
 import Data.Graph.Inductive.Query.BFS (bfs)
 import qualified Data.Set as S
+import Data.Set ((\\))
 import Text.Parsec
 import Text.Parsec.String (Parser, parseFromFile)
 
@@ -23,17 +22,15 @@ makeGraph pipes = undir $ mkGraph nodes edges
     edges = [(f, t, ()) | (Pipe f ts) <- pipes, t <- ts]
 
 toNode :: Int -> LNode Int
-toNode = (id &&& id)
+toNode = id &&& id
 
 subgraphCount :: Network -> Int
-subgraphCount g = go 0 S.empty (G.nodes g)
+subgraphCount g = go 0 (S.fromList (G.nodes g))
   where
-    go n _ [] = n
-    go n seen (x:xs)
-      | x `S.member` seen = go n seen xs
-    go n seen (x:xs) = go (n + 1) seen' xs
-      where
-        seen' = seen `S.union` S.fromList (bfs x g)
+    go n unseen
+      | S.null unseen = n
+    go n unseen =
+      go (n + 1) (unseen \\ S.fromList (bfs (head (S.toList unseen)) g))
 
 withInput :: FilePath -> Parser a -> IO a
 withInput path p = do
